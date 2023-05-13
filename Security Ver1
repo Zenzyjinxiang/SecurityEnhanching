@@ -1,0 +1,54 @@
+import jwt
+import datetime
+
+# This is the user's plaintext password
+password = "mysecretpassword"
+
+# Check if the entered password matches the stored hash
+def authenticate(password):
+    # Here we would look up the user's hashed password in a database
+    stored_password = "..."
+    
+    if password == stored_password:
+        return True
+    else:
+        return False
+
+# Create a JWT token if the user is authenticated
+def create_token():
+    # Generate a token with an expiration time of 5 minutes
+    payload = {
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
+    }
+    
+    # Sign the token with a secret key
+    token = jwt.encode(payload, "mysecretkey", algorithm="HS256")
+    return token
+
+# Verify a JWT token and return the payload if valid
+def verify_token(token):
+    try:
+        # Decode the token with the secret key
+        payload = jwt.decode(token, "mysecretkey", algorithms=["HS256"])
+        return payload
+    except:
+        return None
+
+# Prompt the user to enter their password
+password = input("Please enter your password: ")
+
+# Authenticate the user and create a token if successful
+if authenticate(password):
+    token = create_token()
+    print("Token:", token)
+else:
+    print("Access denied.")
+
+# Verify the token when the user tries to access a protected resource
+token = input("Please enter your token: ")
+payload = verify_token(token)
+
+if payload:
+    print("Access granted!")
+else:
+    print("Access denied.")
